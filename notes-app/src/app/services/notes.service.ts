@@ -8,28 +8,27 @@ import {
   deleteDoc,
   collectionData,
   serverTimestamp,
-} from '@angular/fire/firestore';
-import {
   CollectionReference,
-  DocumentData,
   enableMultiTabIndexedDbPersistence,
-} from 'firebase/firestore';
+} from '@angular/fire/firestore';
+import { Note } from '../modals/note.modal';
+import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class NotesService {
   private firestore = inject(Firestore);
-  private notesRef = collection(this.firestore, 'notes') as CollectionReference<DocumentData>;
+  private notesRef = collection(this.firestore, 'notes') as CollectionReference<Note>;
 
   constructor() {
-    // ✅ Enable offline persistence with multi-tab support
     enableMultiTabIndexedDbPersistence(this.firestore).catch((err) => {
       console.warn('❗ Offline persistence failed:', err.code);
     });
   }
 
   getNotes() {
-    return collectionData(this.notesRef, { idField: 'id' }) as any;
+    return collectionData(this.notesRef, { idField: 'id' }) as Observable<Note[]>;
   }
+
 
   addNote(title: string, content: string) {
     return addDoc(this.notesRef, {
@@ -37,7 +36,7 @@ export class NotesService {
       content,
       updatedAt: serverTimestamp(),
       version: 1,
-    });
+    } as any);
   }
 
   updateNote(id: string, title: string, content: string, version: number) {
@@ -46,7 +45,7 @@ export class NotesService {
       content,
       updatedAt: serverTimestamp(),
       version: version + 1,
-    });
+    } as any);
   }
 
   deleteNote(id: string) {

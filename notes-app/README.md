@@ -2,6 +2,25 @@
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.3.17.
 
+## 🚀 Features
+
+- Create, edit, and delete notes
+- Offline support (works without internet)
+- Automatic sync with Firestore when online
+- Conflict detection using versioning
+- State management using `@ngrx/signals`
+
+## 📦 Setup Instructions
+
+1. Clone the repository
+git clone <https://github.com/ShubhamRGavhane/Task.git>
+
+2. Install dependencies
+npm install
+
+3. Firebase Configuration
+src/environments/environment.ts
+
 ## Development server
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
