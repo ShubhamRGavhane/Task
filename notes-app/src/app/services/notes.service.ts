@@ -21,7 +21,7 @@ export class NotesService {
 
   constructor() {
     enableMultiTabIndexedDbPersistence(this.firestore).catch((err) => {
-      console.warn('❗ Offline persistence failed:', err.code);
+      console.warn('Offline persistence failed:', err.code);
     });
   }
 
