@@ -1,6 +1,23 @@
 import { bootstrapApplication } from '@angular/platform-browser';
-import { appConfig } from './app/app.config';
-import { App } from './app/app';
+import { importProvidersFrom } from '@angular/core';
 
-bootstrapApplication(App, appConfig)
-  .catch((err) => console.error(err));
+import { AppComponent } from './app/app.component';
+import { appConfig } from './app/app.config';
+
+import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
+import { provideAuth, getAuth } from '@angular/fire/auth';
+import { provideFirestore, getFirestore } from '@angular/fire/firestore';
+
+import { environment } from './environments/environment';
+
+bootstrapApplication(AppComponent, {
+  providers: [
+    ...appConfig.providers,
+
+    importProvidersFrom(
+      provideFirebaseApp(() => initializeApp(environment.firebase)),
+      provideAuth(() => getAuth()),
+      provideFirestore(() => getFirestore())
+    ),
+  ],
+});
