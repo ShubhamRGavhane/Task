@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { NotesService } from '../services/notes.service';
 import { NotesStore } from '../store/notes.store';
 import { Note } from '../modals/note.modal';
+import { serverTimestamp } from '@angular/fire/firestore';
 
 @Component({
   standalone: true,
@@ -38,23 +39,46 @@ export class HomePage implements OnInit {
     });
   }
 
-  // Correct signal access
+  // Use signal for reactive UI updates
   notes = computed(() => this.store.notes());
 
   addNote() {
-    this.notesService.addNote(this.title, this.content);
+    const newNoteData = {
+      title: this.title,
+      content: this.content,
+      updatedAt: serverTimestamp(),
+      version: 1
+    };
+
+    this.notesService.addNote(this.title, this.content).then((docRef) => {
+      // Optimistically update store
+      const newNote: Note = {
+        id: docRef.id,
+        ...newNoteData
+      };
+      this.store.addNote(newNote); // 👈 this ensures instant UI update
+    });
+
     this.title = '';
     this.content = '';
   }
 
   deleteNote(id: string) {
     this.notesService.deleteNote(id);
-  } 
+    this.store.deleteNote(id); // 👈 remove from UI instantly
+  }
 
   editNote(note: Note) {
     const updatedContent = prompt('Edit Content:', note.content);
     if (updatedContent !== null) {
+      const updatedNote = {
+        ...note,
+        content: updatedContent,
+        version: note.version + 1,
+        updatedAt: new Date()
+      };
       this.notesService.updateNote(note.id, note.title, updatedContent, note.version);
+      this.store.updateNote(updatedNote); // 👈 update UI instantly
     }
   }
 }
